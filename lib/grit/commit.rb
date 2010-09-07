@@ -12,6 +12,7 @@ module Grit
     lazy_reader :message
     lazy_reader :short_message
     lazy_reader :author_string
+    lazy_reader :files
 
     # Instantiate a new Commit
     #   +id+ is the id of the commit
@@ -24,7 +25,7 @@ module Grit
     #   +message+ is an array of commit message lines
     #
     # Returns Grit::Commit (baked)
-    def initialize(repo, id, parents, tree, author, authored_date, committer, committed_date, message)
+    def initialize(repo, id, parents, tree, author, authored_date, committer, committed_date, message, files)
       @repo = repo
       @id = id
       @parents = parents.map { |p| Commit.create(repo, :id => p) }
@@ -35,6 +36,7 @@ module Grit
       @committed_date = committed_date
       @message = message.join("\n")
       @short_message = message.select { |x| !x.strip.empty? }[0] || ''
+      @files = files
     end
 
     def id_abbrev
@@ -135,7 +137,14 @@ module Grit
 
         lines.shift while lines.first && lines.first.empty?
 
-        commits << Commit.new(repo, id, parents, tree, author, authored_date, committer, committed_date, message_lines)
+        files = []
+        while lines.first && !lines.first.empty? && !(lines.first =~ /^commit/)
+          files << lines.shift
+        end
+
+        lines.shift while lines.first && lines.first.empty?
+
+        commits << Commit.new(repo, id, parents, tree, author, authored_date, committer, committed_date, message_lines, files)
       end
 
       commits
