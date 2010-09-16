@@ -188,6 +188,7 @@ module Grit
       else
         diff = ''
       end
+      
       Diff.list_from_string(@repo, diff)
     end
 
