@@ -174,11 +174,13 @@ module Grit
       Diff.list_from_string(repo, text)
     end
 
-    def show(include_merge = false)
+    def show(include_merge = false, options = {})
       if parents.size > 1 && include_merge
-        diff = @repo.git.native("diff #{parents[0].id}...#{parents[1].id}", {:full_index => true})
+        options = {:full_index => true}.update(options)
+        diff = @repo.git.native("diff #{parents[0].id}...#{parents[1].id}", options)
       else
-        diff = @repo.git.show({:full_index => true, :pretty => 'raw'}, @id)
+        options = {:full_index => true, :pretty => 'raw'}.update(options)
+        diff = @repo.git.show(options, @id)
       end
 
       if diff =~ /diff --git a/
