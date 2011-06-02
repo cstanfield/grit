@@ -42,10 +42,10 @@ module Grit
     else
       self.git_binary   = "/usr/bin/env git"
     end
-    self.git_timeout  = 10
-    self.git_max_size = 5242880 # 5.megabytes
+    self.git_timeout  = 60
+    self.git_max_size = 10485760 # 10.megabytes
 
-    def self.with_timeout(timeout = 10.seconds)
+    def self.with_timeout(timeout = 60.seconds)
       old_timeout = Grit::Git.git_timeout
       Grit::Git.git_timeout = timeout
       yield
